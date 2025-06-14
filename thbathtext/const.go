@@ -1,4 +1,4 @@
-package thaibath
+package thbathtext
 
 var thaiNumeral = map[string]string{
 	"0": "ศูนย์",

@@ -1,4 +1,4 @@
-package thaibath
+package thbathtext
 
 import (
 	"fmt"
