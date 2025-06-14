@@ -20,7 +20,7 @@ Using `thaibath`, convert your decimals to Thai currency text effortlessly.
 ### Installation
 
 ```sh
-go install github.com/dolphinep/thaibath@latest
+go get github.com/dolphinep/thaibath@latest
 ```
 
 ### Usage
@@ -45,15 +45,21 @@ func main() {
 
 - **Basic Conversion:** `2.30` → "สองบาทสามสิบสตางค์"
 - **Custom Rounding:** `21.205` → "ยี่สิบเอ็ดบาทยี่สิบเอ็ดสตางค์"
-- **More examples on thaibath_test.go**
+- **More examples on thaibath_test.go** ⭐️⭐️
 
-## Testing
+## Testing 🧪
 ```
-go test
+go test ./thbathtext 
+
+or
+
+cd thbathtext
+go test 
 ```
 
-## Main Testing
+## Main Testing 🧪
 ```
+git clone github.com/yourusername/thaibath
 go run main.go
 ```
 
@@ -61,5 +67,5 @@ go run main.go
 - Add more features like currency symbol, decimal places
 - Website for demo and documentation
 - Support string input
-
+- etc
 ---
