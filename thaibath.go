@@ -7,16 +7,18 @@ import (
 	"github.com/shopspring/decimal"
 )
 
+/*
+- this function will round the decimal into 2 decimal place then split into 2 part 1.integer 2.fraction
+- In order to convert Thai currency into text, each digits compose of 1.number 2.place. ex 432 = 400(สี่+ร้อย) + 30(สาม+สิบ) + 2(สอง)
+- There are many specials cases for example 21 = 20 ("ยี่สิบ") + 1 ("เอ็ด"), 1 = 1(หนึ่ง)
+*/
 func DecimalToThaiCurrencyText(d decimal.Decimal, rounding ...string) (res string) {
-	fmt.Println("Decimal", d.Round(2).String())
 	dstr := roundingMethod(d, rounding).String()
 	fmt.Println("Decimal Round: ", dstr)
 	parts := strings.Split(dstr, ".")
-	// 6. = "หกบาทถ้วน"
 	hasFraction := len(parts) == 2 && len(parts[1]) != 0
 
 	//integer part
-	// 11,111,121,456,780.45   3214789.080
 	for i, c := range parts[0] {
 		pos := len(parts[0]) - i - 1
 
@@ -38,7 +40,13 @@ func DecimalToThaiCurrencyText(d decimal.Decimal, rounding ...string) (res strin
 			res += thaiPowerOfTen[(pos)%6]
 		}
 	}
-	res += thaiCurrency
+
+	//ignore converting 0 if it's the only number ex. 0.02 = "สองสตางค์"
+	if res == thaiNumeral["0"] {
+		res = ""
+	} else {
+		res += thaiBath
+	}
 
 	// fraction
 	if hasFraction {
@@ -69,12 +77,14 @@ func DecimalToThaiCurrencyText(d decimal.Decimal, rounding ...string) (res strin
 		}
 		res += fractionSuffix
 	} else {
+		if res == "" {
+			res += thaiNumeral["0"] + thaiBath
+		}
 		res += noFractionSuffix
 	}
 
 	return res
 }
-
 
 func roundingMethod(d decimal.Decimal, method []string) decimal.Decimal {
 	if len(method) == 0 {

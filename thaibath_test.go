@@ -11,6 +11,8 @@ var testTable = []struct {
 	d        decimal.Decimal
 	expected string
 }{
+	{decimal.NewFromFloat(0), "ศูนย์บาทถ้วน"},
+
 	{decimal.NewFromInt(2), "สองบาทถ้วน"},
 	{decimal.NewFromInt(12), "สิบสองบาทถ้วน"},
 	{decimal.NewFromInt(112), "หนึ่งร้อยสิบสองบาทถ้วน"},
@@ -22,7 +24,7 @@ var testTable = []struct {
 	{decimal.NewFromFloat(0.21), "ยี่สิบเอ็ดสตางค์"},
 
 	{decimal.NewFromFloat(6.1), "หกบาทสิบสตางค์"},
-	//depend on the requirement on translating this part
+	//depend on the requirement on converting this part
 	{decimal.NewFromFloat(6.0), "หกบาทถ้วน"},
 	{decimal.NewFromFloat(6.00), "หกบาทถ้วน"},
 	{decimal.NewFromFloat(6.), "หกบาทถ้วน"},

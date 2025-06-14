@@ -23,7 +23,7 @@ var thaiPowerOfTen = map[int]string{
 }
 
 const noFractionSuffix = "ถ้วน"
-const thaiCurrency = "บาท"
+const thaiBath = "บาท"
 const fractionSuffix = "สตางค์"
 const onePos0 = "เอ็ด"
 const twoPos1 = "ยี่"
