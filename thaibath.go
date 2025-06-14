@@ -1,16 +1,19 @@
 package thaibath
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/shopspring/decimal"
 )
 
 func DecimalToThaiCurrencyText(d decimal.Decimal, rounding ...string) (res string) {
-
-	dstr := roundingMethod(d, rounding[0]).String()
+	fmt.Println("Decimal", d.Round(2).String())
+	dstr := roundingMethod(d, rounding).String()
+	fmt.Println("Decimal Round: ", dstr)
 	parts := strings.Split(dstr, ".")
-	hasFraction := 
+	// 6. = "หกบาทถ้วน"
+	hasFraction := len(parts) == 2 && len(parts[1]) != 0
 
 	//integer part
 	// 11,111,121,456,780.45   3214789.080
@@ -39,21 +42,28 @@ func DecimalToThaiCurrencyText(d decimal.Decimal, rounding ...string) (res strin
 
 	// fraction
 	if hasFraction {
+		isEd := true // 0.21 = "ยี่สิบเอ็ดสตางค์"
 		for i, c := range parts[1] {
-			//skip 0 on 1st decimal place
-			if i == 0 && string(c) == "0" {
+			decimalPlace := i + 1
+			if decimalPlace == 1 && string(c) == "0" {
+				isEd = false
+			}
+			//skip 0 fraction on 1st decimal place
+			if decimalPlace == 1 && string(c) == "0" {
 				continue
 			}
 			//fraction
-			if i == 0 && string(c) == "2" {
+			if decimalPlace == 1 && string(c) == "2" {
 				res += twoPos1
-			} else if i == 1 && string(c) == "1" {
+			} else if decimalPlace == 1 && string(c) == "1" {
+				res += "" //skip fraction
+			} else if decimalPlace == 2 && string(c) == "1" && isEd {
 				res += onePos0
 			} else {
 				res += thaiNumeral[string(c)]
 			}
 			//fraction place
-			if i == 0 && string(c) != "0" {
+			if decimalPlace == 1 && string(c) != "0" {
 				res += thaiPowerOfTen[1]
 			}
 		}
@@ -65,26 +75,17 @@ func DecimalToThaiCurrencyText(d decimal.Decimal, rounding ...string) (res strin
 	return res
 }
 
-func roundingMethod(d decimal.Decimal, method ...string) decimal.Decimal {
+
+func roundingMethod(d decimal.Decimal, method []string) decimal.Decimal {
 	if len(method) == 0 {
-		return d.RoundDown(2)
+		return d.Round(2)
 	}
 	switch method[0] {
 	case "U":
 		return d.RoundUp(2)
-	case "H":
-		return d.Round(2)
-	default:
+	case "D":
 		return d.RoundDown(2)
+	default:
+		return d.Round(2)
 	}
 }
-
-func hasFraction() bool {
-	if len(parts) == 2 && parts[2][0] != "0" {
-		return
-	}
-	return false
-}
-// func validate(){
-// 	errors.New(fmt.Sprintf("Invalid decimal format: %s", dstr))
-// }
