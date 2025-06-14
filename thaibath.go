@@ -2,8 +2,8 @@ package thaibath
 
 import (
 	"fmt"
-	"strings"
 	"github.com/shopspring/decimal"
+	"strings"
 )
 
 /*
@@ -20,7 +20,7 @@ func FromDecimal(d decimal.Decimal, rounding ...string) (res string) {
 	hasFraction := len(parts) == 2 && len(parts[1]) != 0
 
 	//1. integer part
-	buildIntegerText(parts, &res)
+	buildIntegerText(parts[0], &res)
 
 	if res != "" {
 		res += thaiBath
@@ -28,7 +28,7 @@ func FromDecimal(d decimal.Decimal, rounding ...string) (res string) {
 
 	//2. fraction part
 	if hasFraction {
-		buildFractionText(parts, &res)
+		buildFractionText(parts[1], &res)
 		res += fractionSuffix
 	} else {
 		if res == "" {
@@ -40,16 +40,16 @@ func FromDecimal(d decimal.Decimal, rounding ...string) (res string) {
 	return res
 }
 
-func buildIntegerText(parts []string, res *string) {
-	for i, c := range parts[0] {
-		pos := len(parts[0]) - i - 1
+func buildIntegerText(part string, res *string) {
+	for i, c := range part {
+		pos := len(part) - i - 1
 
 		//1.1 numerical
 		if pos%6 == 1 && string(c) == "1" {
 			*res += ""
 		} else if string(c) == "0" {
 			*res += ""
-		} else if pos%6 == 0 && string(c) == "1" && len(parts[0]) > 1 {
+		} else if pos%6 == 0 && string(c) == "1" && len(part) > 1 {
 			*res += onePos0
 		} else if pos%6 == 1 && string(c) == "2" {
 			*res += twoPos1
@@ -68,9 +68,9 @@ func buildIntegerText(parts []string, res *string) {
 	}
 }
 
-func buildFractionText(parts []string, res *string) {
+func buildFractionText(part string, res *string) {
 	isEd := true // ed = "เอ็ด" = onePos0
-	for i, c := range parts[1] {
+	for i, c := range part {
 		decimalPlace := i + 1
 		if decimalPlace == 1 && string(c) == "0" {
 			isEd = false
