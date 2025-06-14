@@ -67,11 +67,76 @@ var testTable = []struct {
 
 }
 
+var testTableForRoundDown = []struct {
+	d        decimal.Decimal
+	expected string
+}{
+	{decimal.NewFromFloat(12.34), "สิบสองบาทสามสิบสี่สตางค์"},
+	{decimal.NewFromFloat(12.340), "สิบสองบาทสามสิบสี่สตางค์"},
+	{decimal.NewFromFloat(12.341), "สิบสองบาทสามสิบสี่สตางค์"},
+	{decimal.NewFromFloat(12.342), "สิบสองบาทสามสิบสี่สตางค์"},
+	{decimal.NewFromFloat(12.343), "สิบสองบาทสามสิบสี่สตางค์"},
+	{decimal.NewFromFloat(12.344), "สิบสองบาทสามสิบสี่สตางค์"},
+	{decimal.NewFromFloat(12.345), "สิบสองบาทสามสิบสี่สตางค์"},
+	{decimal.NewFromFloat(12.346), "สิบสองบาทสามสิบสี่สตางค์"},
+	{decimal.NewFromFloat(12.347), "สิบสองบาทสามสิบสี่สตางค์"},
+	{decimal.NewFromFloat(12.348), "สิบสองบาทสามสิบสี่สตางค์"},
+	{decimal.NewFromFloat(12.349), "สิบสองบาทสามสิบสี่สตางค์"},
+}
+
+var testTableForRoundUp = []struct {
+	d        decimal.Decimal
+	expected string
+}{
+	{decimal.NewFromFloat(12.34), "สิบสองบาทสามสิบสี่สตางค์"},
+	{decimal.NewFromFloat(12.340), "สิบสองบาทสามสิบสี่สตางค์"},
+	{decimal.NewFromFloat(12.341), "สิบสองบาทสามสิบห้าสตางค์"},
+	{decimal.NewFromFloat(12.342), "สิบสองบาทสามสิบห้าสตางค์"},
+	{decimal.NewFromFloat(12.343), "สิบสองบาทสามสิบห้าสตางค์"},
+	{decimal.NewFromFloat(12.344), "สิบสองบาทสามสิบห้าสตางค์"},
+	{decimal.NewFromFloat(12.345), "สิบสองบาทสามสิบห้าสตางค์"},
+	{decimal.NewFromFloat(12.346), "สิบสองบาทสามสิบห้าสตางค์"},
+	{decimal.NewFromFloat(12.347), "สิบสองบาทสามสิบห้าสตางค์"},
+	{decimal.NewFromFloat(12.348), "สิบสองบาทสามสิบห้าสตางค์"},
+	{decimal.NewFromFloat(12.349), "สิบสองบาทสามสิบห้าสตางค์"},
+}
 func TestText(t *testing.T) {
 	passCount := 0
 	failCount := 0
 	for _, tt := range testTable {
 		result := FromDecimal(tt.d)
+		if result != tt.expected {
+			t.Errorf("%s = actual %s; want %s", tt.d.StringFixedBank(2), result, tt.expected)
+			failCount++
+		} else {
+			passCount++
+		}
+	}
+	fmt.Printf("\n✅ Passed: %d | ❌ Failed: %d\n", passCount, failCount)
+
+}
+
+func TestTextRoundDown(t *testing.T) {
+	passCount := 0
+	failCount := 0
+	for _, tt := range testTableForRoundDown {
+		result := FromDecimal(tt.d, "D")
+		if result != tt.expected {
+			t.Errorf("%s = actual %s; want %s", tt.d.StringFixedBank(2), result, tt.expected)
+			failCount++
+		} else {
+			passCount++
+		}
+	}
+	fmt.Printf("\n✅ Passed: %d | ❌ Failed: %d\n", passCount, failCount)
+
+}
+
+func TestTextRoundUp(t *testing.T) {
+	passCount := 0
+	failCount := 0
+	for _, tt := range testTableForRoundUp {
+		result := FromDecimal(tt.d, "U")
 		if result != tt.expected {
 			t.Errorf("%s = actual %s; want %s", tt.d.StringFixedBank(2), result, tt.expected)
 			failCount++
