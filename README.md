@@ -32,7 +32,7 @@ package main
 
 import (
     "fmt"
-    "github.com/yourusername/thaibath/thbathtext"
+    "github.com/dolphinep/thaibath/thbathtext"
 )
 
 func main() {
@@ -59,7 +59,7 @@ go test
 
 ## Main Testing 🧪
 ```
-git clone github.com/yourusername/thaibath
+git clone github.com/dolphinep/thaibath
 go run main.go
 ```
 
