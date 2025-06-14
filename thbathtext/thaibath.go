@@ -22,10 +22,6 @@ func FromDecimal(d decimal.Decimal, rounding ...string) (res string) {
 	//1. integer part
 	buildIntegerText(parts[0], &res)
 
-	if res != "" {
-		res += thaiBath
-	}
-
 	//2. fraction part
 	if hasFraction {
 		buildFractionText(parts[1], &res)
@@ -66,6 +62,11 @@ func buildIntegerText(part string, res *string) {
 			*res += thaiPowerOfTen[(pos)%6]
 		}
 	}
+
+	if *res != "" {
+		*res += thaiBath
+	}
+
 }
 
 func buildFractionText(part string, res *string) {
