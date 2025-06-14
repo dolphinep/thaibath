@@ -3,7 +3,6 @@ package thaibath
 import (
 	"fmt"
 	"strings"
-
 	"github.com/shopspring/decimal"
 )
 
@@ -12,69 +11,24 @@ import (
 - In order to convert Thai currency into text, each digits compose of 1.number 2.place. ex 432 = 400(สี่+ร้อย) + 30(สาม+สิบ) + 2(สอง)
 - There are many specials cases for example 21 = 20 ("ยี่สิบ") + 1 ("เอ็ด"), 1 = 1(หนึ่ง)
 */
-func DecimalToThaiCurrencyText(d decimal.Decimal, rounding ...string) (res string) {
+func FromDecimal(d decimal.Decimal, rounding ...string) (res string) {
 	dstr := roundingMethod(d, rounding).String()
-	fmt.Println("Decimal Round: ", dstr)
 	parts := strings.Split(dstr, ".")
+	if len(parts[0]) > 15 {
+		fmt.Println("Decimal with digits lager than 15 digt may not precise")
+	}
 	hasFraction := len(parts) == 2 && len(parts[1]) != 0
 
-	//integer part
-	for i, c := range parts[0] {
-		pos := len(parts[0]) - i - 1
+	//1. integer part
+	buildIntegerText(parts, &res)
 
-		//numerical
-		if pos%6 == 1 && string(c) == "1" {
-			res += ""
-		} else if pos%6 == 0 && string(c) == "1" && len(parts[0]) > 1 {
-			res += onePos0
-		} else if pos%6 == 1 && string(c) == "2" {
-			res += twoPos1
-		} else {
-			res += thaiNumeral[string(c)]
-		}
-
-		//numerical place
-		if pos/6 > 0 && pos%6 == 0 {
-			res += strings.Repeat(thaiPowerOfTen[0], pos/6)
-		} else if pos%6 != 0 {
-			res += thaiPowerOfTen[(pos)%6]
-		}
-	}
-
-	//ignore converting 0 if it's the only number ex. 0.02 = "สองสตางค์"
-	if res == thaiNumeral["0"] {
-		res = ""
-	} else {
+	if res != "" {
 		res += thaiBath
 	}
 
-	// fraction
+	//2. fraction part
 	if hasFraction {
-		isEd := true // 0.21 = "ยี่สิบเอ็ดสตางค์"
-		for i, c := range parts[1] {
-			decimalPlace := i + 1
-			if decimalPlace == 1 && string(c) == "0" {
-				isEd = false
-			}
-			//skip 0 fraction on 1st decimal place
-			if decimalPlace == 1 && string(c) == "0" {
-				continue
-			}
-			//fraction
-			if decimalPlace == 1 && string(c) == "2" {
-				res += twoPos1
-			} else if decimalPlace == 1 && string(c) == "1" {
-				res += "" //skip fraction
-			} else if decimalPlace == 2 && string(c) == "1" && isEd {
-				res += onePos0
-			} else {
-				res += thaiNumeral[string(c)]
-			}
-			//fraction place
-			if decimalPlace == 1 && string(c) != "0" {
-				res += thaiPowerOfTen[1]
-			}
-		}
+		buildFractionText(parts, &res)
 		res += fractionSuffix
 	} else {
 		if res == "" {
@@ -84,6 +38,62 @@ func DecimalToThaiCurrencyText(d decimal.Decimal, rounding ...string) (res strin
 	}
 
 	return res
+}
+
+func buildIntegerText(parts []string, res *string) {
+	for i, c := range parts[0] {
+		pos := len(parts[0]) - i - 1
+
+		//1.1 numerical
+		if pos%6 == 1 && string(c) == "1" {
+			*res += ""
+		} else if string(c) == "0" {
+			*res += ""
+		} else if pos%6 == 0 && string(c) == "1" && len(parts[0]) > 1 {
+			*res += onePos0
+		} else if pos%6 == 1 && string(c) == "2" {
+			*res += twoPos1
+		} else {
+			*res += thaiNumeral[string(c)]
+		}
+
+		//1.2 numerical place
+		if pos/6 > 0 && pos%6 == 0 {
+			*res += strings.Repeat(thaiPowerOfTen[0], pos/6)
+		} else if string(c) == "0" {
+			*res += ""
+		} else if pos%6 != 0 {
+			*res += thaiPowerOfTen[(pos)%6]
+		}
+	}
+}
+
+func buildFractionText(parts []string, res *string) {
+	isEd := true // ed = "เอ็ด" = onePos0
+	for i, c := range parts[1] {
+		decimalPlace := i + 1
+		if decimalPlace == 1 && string(c) == "0" {
+			isEd = false
+		}
+		//skip 0 fraction on 1st decimal place
+		if decimalPlace == 1 && string(c) == "0" {
+			continue
+		}
+		//fraction
+		if decimalPlace == 1 && string(c) == "2" {
+			*res += twoPos1
+		} else if decimalPlace == 1 && string(c) == "1" {
+			*res += "" //skip fraction
+		} else if decimalPlace == 2 && string(c) == "1" && isEd {
+			*res += onePos0
+		} else {
+			*res += thaiNumeral[string(c)]
+		}
+		//2.2 fraction place
+		if decimalPlace == 1 && string(c) != "0" {
+			*res += thaiPowerOfTen[1]
+		}
+	}
 }
 
 func roundingMethod(d decimal.Decimal, method []string) decimal.Decimal {
