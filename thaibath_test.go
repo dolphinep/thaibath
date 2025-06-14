@@ -15,6 +15,7 @@ var testTable = []struct {
 	{decimal.NewFromInt(12), "สิบสองบาทถ้วน"},
 	{decimal.NewFromInt(112), "หนึ่งร้อยสิบสองบาทถ้วน"},
 	{decimal.NewFromInt(121), "หนึ่งร้อยยี่สิบเอ็ดบาทถ้วน"},
+	{decimal.NewFromFloat(35.455), "สามสิบห้าบาทสี่สิบห้าสตางค์"},
 	{decimal.NewFromFloat(829.03), "แปดร้อยยี่สิบเก้าบาทสามสตางค์"},
 	{decimal.NewFromFloat(829.3), "แปดร้อยยี่สิบเก้าบาทสามสิบสตางค์"},
 	{decimal.NewFromFloat(112.34), "หนึ่งร้อยสิบสองบาทสามสิบสี่สตางค์"},
@@ -22,11 +23,10 @@ var testTable = []struct {
 }
 
 func TestText(t *testing.T) {
-
 	passCount := 0
 	failCount := 0
 	for _, tt := range testTable {
-		result := decimalToThaiCurrencyText(tt.d)
+		result := DecimalToThaiCurrencyText(tt.d, "D")
 		if result != tt.expected {
 			t.Errorf("%s = actual %s; want %s", tt.d.String(), result, tt.expected)
 			failCount++
