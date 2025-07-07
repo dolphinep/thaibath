@@ -147,3 +147,11 @@ func TestTextRoundUp(t *testing.T) {
 	fmt.Printf("\n✅ Passed: %d | ❌ Failed: %d\n", passCount, failCount)
 
 }
+
+func BenchmarkThaiBathText(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		for _, tt := range testTable {
+			_ = FromDecimal(tt.d)
+		}
+	}
+}
