@@ -37,6 +37,8 @@ func FromDecimal(d decimal.Decimal, rounding ...string) (res string) {
 }
 
 func buildIntegerText(part string, res *string) {
+		//case 000_000 -> remove "ล้าน" 
+	zeroCount := 0
 	for i, c := range part {
 		pos := len(part) - i - 1
 
@@ -45,7 +47,7 @@ func buildIntegerText(part string, res *string) {
 			*res += ""
 		} else if string(c) == "0" {
 			*res += ""
-		} else if pos%6 == 0 && string(c) == "1" && len(part) > 1 {
+		} else if pos%6 == 0 && string(c) == "1" && len(part) > 1 && len(part)%6 != 1 {
 			*res += onePos0
 		} else if pos%6 == 1 && string(c) == "2" {
 			*res += twoPos1
@@ -54,12 +56,20 @@ func buildIntegerText(part string, res *string) {
 		}
 
 		//1.2 numerical place
-		if pos/6 > 0 && pos%6 == 0 {
-			*res += strings.Repeat(thaiPowerOfTen[0], pos/6)
-		} else if string(c) == "0" {
+		if string(c) == "0" {
 			*res += ""
 		} else if pos%6 != 0 {
 			*res += thaiPowerOfTen[(pos)%6]
+		}
+		//1.3 handling million and billion
+		if string(c) == "0"{
+			zeroCount++
+		}
+		if pos/6 > 0 && pos%6 == 0 && zeroCount != 6{
+			*res += strings.Repeat(thaiPowerOfTen[0], pos/6)
+		}
+		if pos%6 == 0 {
+			zeroCount = 0 //reset zeroCount for next 6 digits
 		}
 	}
 
