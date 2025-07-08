@@ -18,7 +18,11 @@ func FromDecimal(d decimal.Decimal, rounding ...string) (res string) {
 		fmt.Println("Decimal with digits lager than 15 digt may not precise")
 	}
 	hasFraction := len(parts) == 2 && len(parts[1]) != 0
-
+	//0. is negative
+	if string(parts[0][0]) == "-" {
+		res += "ลบ"
+		parts[0] = parts[0][1:len(parts[0])] // remove negative sign
+	}
 	//1. integer part
 	buildIntegerText(parts[0], &res)
 
